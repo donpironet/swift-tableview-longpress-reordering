@@ -80,7 +80,10 @@ class ViewController: UIViewController {
                 //[self.objects exchangeObjectAtIndex:indexPath.row withObjectAtIndex:sourceIndexPath.row];
                 print("Moving to postion \(indexPath.row) section: \(indexPath.section)")
                 
+                self.removeIndicatorView()
+                
                 self.tableView.moveRowAtIndexPath(sourceIndexPath, toIndexPath: indexPath)
+                self.insertIndicatorView(indexPath)
                 self.sourceIndexPath = indexPath
             }
             
@@ -89,6 +92,8 @@ class ViewController: UIViewController {
             if let sourceIndexPath = self.sourceIndexPath, let cell: UITableViewCell = self.tableView.cellForRowAtIndexPath(sourceIndexPath), let snapshot = self.snapshot {
                 
                 cell.alpha = 0.0
+                
+                self.removeIndicatorView()
                 
                 UIView.animateWithDuration(0.25, animations: {
                     () -> Void in
@@ -109,7 +114,19 @@ class ViewController: UIViewController {
         }
     }
     
+    private func insertIndicatorView(indexPath: NSIndexPath) {
+        self.isIndicatorRowAddedInSection = true
+        self.lastIndicatorRowIndexPath = NSIndexPath(forRow: indexPath.row + 1, inSection: indexPath.section)
+        self.tableView.insertRowsAtIndexPaths([NSIndexPath(forRow: indexPath.row + 1, inSection: indexPath.section)], withRowAnimation: .None)
+    }
     
+    private func removeIndicatorView() {
+        if let lastIndicatorRowIndexPath = self.lastIndicatorRowIndexPath {
+            self.isIndicatorRowAddedInSection = false
+            self.lastIndicatorRowIndexPath = nil
+            self.tableView.deleteRowsAtIndexPaths([lastIndicatorRowIndexPath], withRowAnimation: .None)
+        }
+    }
     
     func customSnapshotFromView(inputView: UIView) -> UIView {
         
